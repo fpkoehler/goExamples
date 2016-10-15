@@ -1,0 +1,50 @@
+<Season Year="2016">
+    <Week num="1">
+        <Games>
+            <TeamV>jags</TeamV>
+            <TeamH>cards</TeamH>
+            <Status>final</Status>
+            <ScoreV>3</ScoreV>
+            <ScoreH>7</ScoreH>
+        </Games>
+        <Games>
+            <TeamV>broncos</TeamV>
+            <TeamH>panthers</TeamH>
+            <Status>final</Status>
+            <ScoreV>24</ScoreV>
+            <ScoreH>10</ScoreH>
+        </Games>
+    </Week>
+    <Week num="2">
+        <Games>
+            <TeamV>seahawks</TeamV>
+            <TeamH>49ers</TeamH>
+            <Status>final</Status>
+            <ScoreV>0</ScoreV>
+            <ScoreH>53</ScoreH>
+        </Games>
+        <Games>
+            <TeamV>redskins</TeamV>
+            <TeamH>eagles</TeamH>
+            <Status>final</Status>
+            <ScoreV>10</ScoreV>
+            <ScoreH>13</ScoreH>
+        </Games>
+    </Week>
+    <Week num="3">
+        <Games>
+            <TeamV>colts</TeamV>
+            <TeamH>titans</TeamH>
+            <Status>final</Status>
+            <ScoreV>20</ScoreV>
+            <ScoreH>3</ScoreH>
+        </Games>
+        <Games>
+            <TeamV>steelers</TeamV>
+            <TeamH>falcons</TeamH>
+            <Status>final</Status>
+            <ScoreV>22</ScoreV>
+            <ScoreH>7</ScoreH>
+        </Games>
+    </Week>
+</Season>
