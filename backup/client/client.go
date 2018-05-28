@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/fpkoehler/goExamples/rpc/shared"
+	"github.com/fpkoehler/goExamples/backup/shared"
 )
 
 /*************************************************
@@ -63,7 +63,17 @@ func (b *BackupRpc) PushFile2(path string, info os.FileInfo) error {
 	defer file.Close()
 
 	var fileInitReply shared.FileInitReply
-	err = b.client.Call("Backup.FileInit", shared.FileInitArg{Name: path}, &fileInitReply)
+	fileInfo := shared.FileInfo{
+		Name:    path,
+		Size:    info.Size(),
+		Mode:    info.Mode(),
+		ModTime: info.ModTime(),
+	}
+	fileInitArg := shared.FileInfoArg{
+		SetId:    setId,
+		FileInfo: fileInfo,
+	}
+	err = b.client.Call("Backup.FileInit", fileInitArg, &fileInitReply)
 	if err != nil {
 		log.Fatal("FileInit rpc error:", err)
 	}
@@ -72,7 +82,7 @@ func (b *BackupRpc) PushFile2(path string, info os.FileInfo) error {
 		return errors.New("Server unable to accept file")
 	}
 	defer func() {
-		log.Println("Backup.FileClose", fileInitReply.Id, "file", path)
+		log.Println("Backup.FileClose id:", fileInitReply.Id, "file:", path)
 		err = b.client.Call("Backup.FileClose", shared.FileCloseArg{Id: fileInitReply.Id}, &boolReply)
 		if err != nil {
 			log.Fatal("FileClose rpc error:", err)
@@ -104,10 +114,10 @@ func (b *BackupRpc) PushFile2(path string, info os.FileInfo) error {
 		}
 
 		//if i%((blocks-blockId)/100+1) == 0 {
-		log.Println("Uploading %s [%d/%d] blocks", path, blockId+1, blocks-blockId)
+		log.Printf("Uploading %s [%d/%d] blocks\n", path, blockId+1, blocks)
 		//}
 	}
-	log.Println("Upload %s completed", path)
+	log.Printf("Upload %s completed\n", path)
 	return nil
 }
 
@@ -180,7 +190,7 @@ func main() {
 	if err != nil {
 		log.Println("backup.getServerFileList() error:", err)
 	}
-	log.Println(serverFiles)
+	log.Println("Server Files:", serverFiles)
 
 	loop := true
 	for loop {

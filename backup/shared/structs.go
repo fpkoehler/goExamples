@@ -30,7 +30,8 @@ type FileInfoListReply struct {
 }
 
 type FileInitArg struct {
-	Name string
+	SetId	SetId
+	FileInfo FileInfo
 }
 
 type FileInitReply struct {

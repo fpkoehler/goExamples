@@ -5,9 +5,9 @@ import (
 	"net"
 	"net/rpc"
 	"os"
-	"path/filepath"
+	"path"
 
-	"github.com/fpkoehler/goExamples/rpc/shared"
+	"github.com/fpkoehler/goExamples/backup/shared"
 )
 
 type Set struct {
@@ -24,6 +24,8 @@ type Session struct {
 }
 
 var sessions map[int]Session
+
+const sessionsMax = 5
 
 /*************************************************
  * RPC server
@@ -66,24 +68,39 @@ func (b *Backup) FileToServer(args *shared.FileInfoArg, reply *shared.BoolReply)
 
 func (b *Backup) FileInit(args *shared.FileInitArg, reply *shared.FileInitReply) error {
 	/* TODO: need a lock */
-	sessionId := 1
-	_, found := sessions[sessionId]
+
+	/* find a place in the sessions map that is not occupied */
+	found := true
+	sessionId := 0
+	for sessionId = 1; sessionId <= sessionsMax; sessionId++ {
+		_, found = sessions[sessionId]
+		if found == false {
+			break
+		}
+	}
 	if found == true {
 		log.Println("FileInit: no more sessions available")
 		reply.Id = 0
 		return nil
 	}
 
-	localFileName := "/tmp/" + filepath.Base(args.Name)
+	localFileName := path.Join("/tmp/", args.SetId.Host, args.FileInfo.Name)
+
+	err := os.MkdirAll(path.Dir(localFileName), 0755)
+	if err != nil {
+		log.Println("FileInit: could not create dir path:", path.Dir(localFileName), err)
+		reply.Id = 0
+		return nil
+	}
+
 	file, err := os.OpenFile(localFileName, os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Println("FileInit: could not open", localFileName, err.Error())
 		reply.Id = 0
 		return nil
 	}
-	session := Session{name: localFileName, file: file}
 
-	sessions[sessionId] = session
+	sessions[sessionId] = Session{name: localFileName, file: file}
 
 	reply.Id = sessionId
 	return nil
